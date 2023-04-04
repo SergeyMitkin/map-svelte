@@ -75,7 +75,7 @@
 
 
     function draw() {
-        let imgData = '/fon.jpg';
+        let imgData = '/assets/modules/map/img/fon.jpg';
         fabric.util.loadImage(imgData, function (img) {
             let oImg = new fabric.Image(img);
             oImg.scale(1).set({
