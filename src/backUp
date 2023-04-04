@@ -1,0 +1,185 @@
+<script>
+    import {onMount} from "svelte";
+
+    let element = null;
+    let data = [];
+    let scale = 1;
+    let activeElement = null;
+    export let ctx = null;
+    let bodyEvent = null;
+    let delta = null;
+    let zoom = 1;
+    let canvas;
+    let isDrug = false;
+    let lastX = 0;
+    let lastY = 0;
+    let originx = 0, originy = 0;
+    let imageObj = null;
+    let isAddElement = false;
+
+    onMount(async () => {
+        canvas = document.getElementById('mapka')
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight - 50; //50 на панельку
+        // console.log("POSITION", lastX, lastY)
+
+        document.addEventListener("wheel", event => {
+
+            delta = Math.sign(event.deltaY);
+            const wheel = event.deltaY < 0 ? 1 : -1;
+            zoom = zoom * Math.exp(wheel * 0.2);
+            ctx.setTransform(1, 0, 0, 1, 0, 0); //чтобы стирание шло нормально
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.scale(zoom, zoom);
+            createContext();
+            loadImg();
+
+
+        })
+
+        let v = document.getElementById('mapka')
+        createContext();
+        loadImg();
+        printElement(data[0], ctx);
+
+        canvas.addEventListener('mousedown', function (evt) {
+            if (!isAddElement) {
+                isDrug = true;
+                lastX = evt.offsetX || (evt.clientX - canvas.offsetLeft);
+                lastY = evt.offsetY || (evt.clientY - canvas.offsetTop);
+            }
+
+        }, false);
+
+        canvas.addEventListener('mousemove', function (evt) {
+
+            let curX = evt.offsetX || (evt.clientX - canvas.offsetLeft);
+            let curY = evt.offsetY || (evt.clientY - canvas.offsetTop);
+
+            if (isDrug) {
+                originx = originx - (lastX - curX) / zoom; //3 для скорости
+                originy = originy - (lastY - curY) / zoom;
+                ctx.setTransform(1, 0, 0, 1, 0, 0); //чтобы стирание шло нормально
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.scale(zoom, zoom);
+                createContext();
+                loadImg();
+                lastX = curX;
+                lastY = curY;
+            }
+        }, false);
+
+        canvas.addEventListener('mouseup', function (evt) {
+            isDrug = false;
+        }, false);
+
+        canvas.addEventListener('mouseout', function (evt) {
+            isDrug = false;
+        }, false);
+
+
+    });
+
+    function draw() {
+        createContext();
+        loadImg();
+
+    }
+
+    function loadImg() {
+        if (imageObj == null) {
+            imageObj = new Image();
+            imageObj.src = '/fon.jpg';
+            imageObj.onload = function () {
+                ctx.drawImage(imageObj, originx, originy);
+                data.forEach((item) => {
+                    printElement(item, ctx);
+                })
+            }
+        } else {
+            ctx.drawImage(imageObj, originx, originy);
+            data.forEach((item) => {
+                printElement(item, ctx);
+            })
+        }
+    }
+
+
+    function createContext() {
+        ctx = canvas.getContext("2d");
+        ctx.width = '1';
+    }
+
+    function printElement(d, ctx) {
+        if (d) {
+
+            if (d.length > 0) {
+                ctx.beginPath(); // Start a new path
+                d.forEach((item, key) => {
+                    if (key == 0) {
+                        ctx.moveTo(item[0] - canvas.offsetLeft + originx, item[1] - canvas.offsetTop + originy);
+                    } else {
+                        ctx.lineTo(item[0] - canvas.offsetLeft + originx, item[1] - canvas.offsetTop + originy);
+                    }
+                    // console.log('WRITE', item[0], item[1]);
+                });
+                ctx.stroke();
+                ctx.fillStyle = "rgba(213,0,0,0.5)";
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+    }
+
+    function getTransformedPoint(x, y) {
+        const originalPoint = new DOMPoint(x, y);
+        return ctx.getTransform().invertSelf().transformPoint(originalPoint);
+    }
+
+    function addPolygon() {
+        if (isAddElement) {
+            element[element.length-1]=element[0];
+            data.push(element);
+            draw();
+            element = null;
+        }
+        isAddElement = !isAddElement;
+        if (isAddElement) {
+            element = [];
+            bodyEvent = document.getElementById('mapka').addEventListener('click', function (e) {
+                if (isAddElement) {
+                    let d = getTransformedPoint(e.clientX, e.clientY);
+                    element.push([d.x - originx, d.y - originy]);
+                    printElement(element, ctx);
+                }
+
+            });
+        }
+    }
+</script>
+<div class="map">
+    <div class="panel">
+        <button on:click={addPolygon}>{!isAddElement ? "Добавить элемент" : "Завершить рисование"}</button>
+    </div>
+    <canvas class="mapZone" id="mapka">
+    </canvas>
+</div>
+
+<style>
+    .panel {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .map {
+        flex-grow: 1;
+
+
+    }
+
+    .mapZone {
+
+        flex-grow: 1;
+    }
+</style>
