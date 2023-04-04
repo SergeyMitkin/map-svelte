@@ -119,7 +119,7 @@
 <style>
     .panel {
         position: absolute;
-        z-index: 9999;
+        z-index: 1000;
         width: max-content;
         height: auto;
         top: 0px;
