@@ -2,6 +2,9 @@
     import {fabric} from "fabric";
     import {onMount} from 'svelte';
 
+    let b;
+    let imgData;
+    let img
     let c;
     let dataSet = [];
     let canvas = null;
@@ -11,6 +14,8 @@
     let lastX = 0;
     let lastY = 0;
     onMount(() => {
+        b = document.getElementById("background_path");
+        imgData = b.getAttribute("value");
         c = document.getElementById('mapka');
         c.width = window.innerWidth;
         c.height = window.innerHeight - 50; //50 на панельку
@@ -70,12 +75,11 @@
         canvas.on("mouse:out", function () {
             isDrug = false;
         })
-        draw();
+        draw(imgData);
     });
 
 
-    function draw() {
-        let imgData = '/assets/modules/map/img/fon.jpg';
+    function draw(imgData) {
         fabric.util.loadImage(imgData, function (img) {
             let oImg = new fabric.Image(img);
             oImg.scale(1).set({
