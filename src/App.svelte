@@ -4,7 +4,9 @@
 
     let f;
     let b;
+    let j;
     let imgData;
+    let jsonData;
     let img
     let c;
     let dataSet = [];
@@ -18,7 +20,9 @@
     onMount(() => {
         f = document.getElementById("sumbit_form");
         b = document.getElementById("background_path");
+        j = document.getElementById("canvas_json");
         imgData = b.getAttribute("value");
+        jsonData = j.getAttribute("value");
         c = document.getElementById('mapka');
         c.width = window.innerWidth;
         c.height = window.innerHeight - 50; //50 на панельку
@@ -27,7 +31,7 @@
 
         f.addEventListener('submit', event => {
             event.preventDefault();
-            alert('submitting');
+            showJson();
         });
 
         canvas.on('mouse:wheel', function (opt) {
@@ -83,9 +87,15 @@
         canvas.on("mouse:out", function () {
             isDrug = false;
         })
-        draw(imgData);
-    });
 
+        if(isJsonString (jsonData)) {
+            console.log('json');
+            canvas.loadFromJSON(jsonData);
+        } else {
+            console.log('img');
+            draw(imgData);
+        }
+    });
 
     function draw(imgData) {
         fabric.util.loadImage(imgData, function (img) {
@@ -118,6 +128,20 @@
     function showJson() {
         console.log("JSON", JSON.stringify(canvas));
     }
+
+    function showMap(){
+        console.log('test');
+        canvas.loadFromJSON(dataJson);
+    }
+
+    function isJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
 </script>
 <div class="map">
     <!--    <div class="panel">-->
@@ -128,7 +152,10 @@
     <div class="panel">
         <i class="btn" on:click|self={addRect}>+ место</i>
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
-        <i class="btn" on:click|self={showJson}>Показать Json</i>
+        <i class="btn" on:click|self={showMap}>карта</i>
+    </div>
+    <div>
+
     </div>
 </div>
 
