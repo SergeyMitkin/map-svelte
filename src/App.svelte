@@ -29,11 +29,6 @@
         canvas = new fabric.Canvas(c);
         canvas.selection = false;
 
-        f.addEventListener('submit', event => {
-            event.preventDefault();
-            showJson();
-        });
-
         canvas.on('mouse:wheel', function (opt) {
             let delta = opt.e.deltaY;
             let zoom = canvas.getZoom();
@@ -81,6 +76,7 @@
                 lastY = curY;
             }
         })
+
         canvas.on("mouse:up", function (e) {
             isDrug = false;
         })
@@ -89,12 +85,16 @@
         })
 
         if(isJsonString (jsonData)) {
-            console.log('json');
             canvas.loadFromJSON(jsonData);
         } else {
-            console.log('img');
             draw(imgData);
         }
+
+        f.addEventListener('submit', function (e){
+            e.preventDefault();
+            j.setAttribute('value', JSON.stringify(canvas));
+            this.submit();
+        })
     });
 
     function draw(imgData) {
@@ -129,11 +129,6 @@
         console.log("JSON", JSON.stringify(canvas));
     }
 
-    function showMap(){
-        console.log('test');
-        canvas.loadFromJSON(dataJson);
-    }
-
     function isJsonString(str) {
         try {
             JSON.parse(str);
@@ -152,7 +147,6 @@
     <div class="panel">
         <i class="btn" on:click|self={addRect}>+ место</i>
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
-        <i class="btn" on:click|self={showMap}>карта</i>
     </div>
     <div>
 
