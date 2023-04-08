@@ -2,6 +2,7 @@
     import {fabric} from "fabric";
     import {onMount} from 'svelte';
 
+    let f;
     let b;
     let imgData;
     let img
@@ -13,7 +14,9 @@
     let originY = 0;
     let lastX = 0;
     let lastY = 0;
+
     onMount(() => {
+        f = document.getElementById("sumbit_form");
         b = document.getElementById("background_path");
         imgData = b.getAttribute("value");
         c = document.getElementById('mapka');
@@ -21,6 +24,12 @@
         c.height = window.innerHeight - 50; //50 на панельку
         canvas = new fabric.Canvas(c);
         canvas.selection = false;
+
+        f.addEventListener('submit', event => {
+            event.preventDefault();
+            alert('submitting');
+        });
+
         canvas.on('mouse:wheel', function (opt) {
             let delta = opt.e.deltaY;
             let zoom = canvas.getZoom();
@@ -50,7 +59,6 @@
 
         canvas.on("mouse:move", function (e) {
             if (isDrug) {
-
                 let curX = e.e.clientX;
                 let curY = e.e.clientY;
                 console.log(e.e.clientX, e.e.clientY);
@@ -89,14 +97,12 @@
             canvas.add(oImg);
             canvas.item(0).selectable = false;
         });
-
     }
 
     function addRect(e) {
         console.log(canvas.offsetLeft, canvas.offsetTop, e);
         let zoom = canvas.getZoom();
         const rect = new fabric.Rect({
-
             left: originX / zoom + canvas.width / 2 / zoom,
             top: originY / zoom + canvas.height / 2 / zoom,
             width: 50,
@@ -107,7 +113,10 @@
     }
     function showObjects(){
         console.log("OBJECT", canvas.getObjects());
+    }
 
+    function showJson() {
+        console.log("JSON", JSON.stringify(canvas));
     }
 </script>
 <div class="map">
@@ -116,8 +125,11 @@
     <!--    </div>-->
     <canvas bind:this={c} class="mapZone" id="mapka">
     </canvas>
-    <div class="panel"><i class="btn" on:click|self={addRect}>+ место</i>
-        <i class="btn" on:click|self={showObjects}>Показать элемент</i></div>
+    <div class="panel">
+        <i class="btn" on:click|self={addRect}>+ место</i>
+        <i class="btn" on:click|self={showObjects}>Показать элемент</i>
+        <i class="btn" on:click|self={showJson}>Показать Json</i>
+    </div>
 </div>
 
 <style>
