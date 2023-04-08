@@ -18,7 +18,7 @@
     let lastY = 0;
 
     onMount(() => {
-        f = document.getElementById("sumbit_form");
+        f = document.getElementById("map-form");
         b = document.getElementById("background_path");
         j = document.getElementById("canvas_json");
         imgData = b.getAttribute("value");
@@ -95,6 +95,12 @@
             j.setAttribute('value', JSON.stringify(canvas));
             this.submit();
         })
+
+        document.addEventListener('keyup', function (e){
+            if(e.key === "Delete") {
+                removeObject();
+            }
+        })
     });
 
     function draw(imgData) {
@@ -129,6 +135,13 @@
         console.log("JSON", JSON.stringify(canvas));
     }
 
+    // Удаление активного элемента
+    function removeObject() {
+        if (canvas.getActiveObject().type !== "image") {
+            canvas.remove(canvas.getActiveObject());
+        }
+    }
+
     function isJsonString(str) {
         try {
             JSON.parse(str);
@@ -146,6 +159,7 @@
     </canvas>
     <div class="panel">
         <i class="btn" on:click|self={addRect}>+ место</i>
+        <i class="btn" on:click|self={removeObject}>- место</i>
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
     </div>
     <div>
