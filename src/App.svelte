@@ -85,7 +85,11 @@
         })
 
         if(isJsonString (jsonData)) {
-            canvas.loadFromJSON(jsonData);
+            canvas.loadFromJSON(jsonData, canvas.renderAll.bind(canvas), function(o, object) {
+                if (object.type === "image") {
+                    object.selectable = false;
+                }
+            });
         } else {
             draw(imgData);
         }
@@ -109,6 +113,7 @@
             oImg.scale(1).set({
                 left: 0,
                 top: 0,
+                selectable: false
             });
             canvas.add(oImg);
             canvas.item(0).selectable = false;
@@ -127,7 +132,34 @@
         });
         canvas.add(rect);
     }
-    function showObjects(){
+
+    function addText() {
+        let text = new fabric.IText("Bharat\nasdshhhha\nasdasda\nnn\nklssd", {
+            fontFamily: 'Courier New',
+            left: 0,
+            top: 0,
+            fontSize: 16,
+            fill: '#000000'
+        });
+
+        let rect2 = new fabric.Rect({
+            height: 100,
+            width: 100,
+            fill: '#ffcc12',
+            opacity: 1
+        });
+
+        let rect3 = canvas.getActiveObject();
+
+        console.log(rect2);
+        console.log(rect3);
+
+        let group = new fabric.Group([rect2, text]);
+
+        canvas.add(group);
+    }
+
+    function showObjects() {
         console.log("OBJECT", canvas.getObjects());
     }
 
@@ -157,13 +189,12 @@
     <!--    </div>-->
     <canvas bind:this={c} class="mapZone" id="mapka">
     </canvas>
+
     <div class="panel">
         <i class="btn" on:click|self={addRect}>+ место</i>
         <i class="btn" on:click|self={removeObject}>- место</i>
+        <i class="btn" on:click|self={addText}>Добавить описание</i>
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
-    </div>
-    <div>
-
     </div>
 </div>
 
