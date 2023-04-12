@@ -259,12 +259,6 @@
             <i hidden={isEditTextHidden} class="btn" on:click|self={editText}>Изменить описание</i>
         {/if}
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
-
-<!--            <i on:click={showIcon}>Показать иконку</i>-->
-<!--            <i on:click={hideIcon}>Скрыть иконку</i>-->
-<!--        {#if !isHidden}-->
-<!--            <i hidden={isHidden}>Скрытая иконка</i>-->
-<!--        {/if}-->
     </div>
 </div>
 
