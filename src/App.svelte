@@ -131,7 +131,8 @@
             top: originY / zoom + canvas.height / 2 / zoom,
             width: width,
             height: height,
-            fill: "rgba(213,0,0,0.5)"
+            fill: "rgba(213,0,0,0.5)",
+            rect_id: max_id + 1
         });
         rect.on('selected', () => {
             isTextHidden = false
@@ -140,31 +141,72 @@
             isTextHidden = true
         })
         canvas.add(rect);
+        canvas.renderAll();
     }
 
     function addText() {
-
-        var circle = new fabric.Circle({
-            radius: 50,
-            fill: 'red',
-            left: 100,
-            top: 100
-        });
-
-        var text = new fabric.Textbox('Editable text', {
-            left: 100,
-            top: 100,
+        let activeRect = canvas.getActiveObject();
+        const text = new fabric.Textbox('Текст' , {
             fontSize: 20,
-            editable: true
-        });
-
-        var group = new fabric.Group([circle, text], {
-            left: 100,
-            top: 100
-        });
-
+            left: activeRect.left,
+            top: activeRect.top,
+            rect_id: activeRect.rect_id
+        })
+        text.on('deselected', () => {
+            groupObjects(activeRect.rect_id);
+        })
+        canvas.setActiveObject(text);
         canvas.add(text);
         canvas.renderAll();
+    }
+
+    function editText() {
+        let activeGroup = canvas.getActiveObject();
+        activeGroup.destroy();
+        let objects = activeGroup.getObjects();
+        canvas.remove(activeGroup);
+        canvas.add(...objects);
+        activeGroup = null;
+        canvas.requestRenderAll();
+        for (var i = 0; i < objects.length; i++) {
+            var obj = objects[i];
+            if (obj instanceof fabric.Textbox) {
+                canvas.setActiveObject(obj);
+            }
+        }
+    }
+
+    function groupObjects(rect_id) {
+        let objects = canvas.getObjects();
+        let group_objects = [];
+        let group_index = 0;
+        for (let i = 0; i < objects.length; i++) {
+            let obj = objects[i];
+            if ((obj instanceof fabric.Rect || obj instanceof fabric.Textbox) && obj.rect_id === rect_id){
+                group_objects[group_index] = objects[i];
+                group_index++;
+            }
+        }
+        let group = new fabric.Group(group_objects, {
+            cornerColor: 'white',
+            rect_id: rect_id
+        });
+        group.on('deselected', () => {
+            isEditTextHidden = true;
+        })
+        group.on('selected', () => {
+            isEditTextHidden = false
+            isTextHidden = true
+        })
+        canvas.add(group);
+        clearCanvas(group_objects);
+        canvas.requestRenderAll();
+    }
+
+    function clearCanvas(group_objects) {
+        group_objects.forEach((o) => {
+            canvas.remove(o);
+        })
     }
 
     function showObjects() {
@@ -214,7 +256,7 @@
             <i hidden={isTextHidden} class="btn" on:click|self={addText}>Добавить описание</i>
         {/if}
         {#if !isEditTextHidden}
-            <i hidden={isEditTextHidden} class="btn" on:click|self={addText}>Изменить описание</i>
+            <i hidden={isEditTextHidden} class="btn" on:click|self={editText}>Изменить описание</i>
         {/if}
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
 
