@@ -1,6 +1,10 @@
 <script>
     import {fabric} from "fabric";
     import {onMount} from 'svelte';
+    import {maxRectId} from "./utils/utils";
+
+    let isTextHidden = true;
+    let isEditTextHidden = true;
 
     let f;
     let b;
@@ -34,12 +38,12 @@
             let zoom = canvas.getZoom();
             canvas.absolutePan({
                 x: originX,
-                y: originY
+                y: 0
             });
             zoom *= 0.999 ** delta;
             if (zoom > 20) zoom = 20;
             if (zoom < 0.01) zoom = 0.01;
-            canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom);
+            canvas.zoomToPoint({x: 0, y: 0}, zoom);
             opt.e.preventDefault();
             opt.e.stopPropagation();
         });
@@ -60,12 +64,8 @@
             if (isDrug) {
                 let curX = e.e.clientX;
                 let curY = e.e.clientY;
-                console.log(e.e.clientX, e.e.clientY);
-
                 originX = originX + (lastX - curX);
                 originY = originY + (lastY - curY);
-                console.log(originX, originY);
-
                 canvas.absolutePan({
                     x: originX,
                     y: originY
@@ -121,42 +121,50 @@
     }
 
     function addRect(e) {
-        console.log(canvas.offsetLeft, canvas.offsetTop, e);
+        // console.log(canvas.offsetLeft, canvas.offsetTop, e);
+        let max_id = maxRectId(canvas);
         let zoom = canvas.getZoom();
+        let width = 50;
+        let height = 50;
         const rect = new fabric.Rect({
             left: originX / zoom + canvas.width / 2 / zoom,
             top: originY / zoom + canvas.height / 2 / zoom,
-            width: 50,
-            height: 50,
+            width: width,
+            height: height,
             fill: "rgba(213,0,0,0.5)"
         });
+        rect.on('selected', () => {
+            isTextHidden = false
+        })
+        rect.on('deselected', () => {
+            isTextHidden = true
+        })
         canvas.add(rect);
     }
 
     function addText() {
-        let text = new fabric.IText("Bharat\nasdshhhha\nasdasda\nnn\nklssd", {
-            fontFamily: 'Courier New',
-            left: 0,
-            top: 0,
-            fontSize: 16,
-            fill: '#000000'
+
+        var circle = new fabric.Circle({
+            radius: 50,
+            fill: 'red',
+            left: 100,
+            top: 100
         });
 
-        let rect2 = new fabric.Rect({
-            height: 100,
-            width: 100,
-            fill: '#ffcc12',
-            opacity: 1
+        var text = new fabric.Textbox('Editable text', {
+            left: 100,
+            top: 100,
+            fontSize: 20,
+            editable: true
         });
 
-        let rect3 = canvas.getActiveObject();
+        var group = new fabric.Group([circle, text], {
+            left: 100,
+            top: 100
+        });
 
-        console.log(rect2);
-        console.log(rect3);
-
-        let group = new fabric.Group([rect2, text]);
-
-        canvas.add(group);
+        canvas.add(text);
+        canvas.renderAll();
     }
 
     function showObjects() {
@@ -182,6 +190,15 @@
         }
         return true;
     }
+
+    let isHidden = true;
+
+    function hideIcon() {
+        isHidden = true;
+    }
+    function showIcon() {
+        isHidden = false;
+    }
 </script>
 <div class="map">
     <!--    <div class="panel">-->
@@ -193,8 +210,19 @@
     <div class="panel">
         <i class="btn" on:click|self={addRect}>+ место</i>
         <i class="btn" on:click|self={removeObject}>- место</i>
-        <i class="btn" on:click|self={addText}>Добавить описание</i>
+        {#if !isTextHidden}
+            <i hidden={isTextHidden} class="btn" on:click|self={addText}>Добавить описание</i>
+        {/if}
+        {#if !isEditTextHidden}
+            <i hidden={isEditTextHidden} class="btn" on:click|self={addText}>Изменить описание</i>
+        {/if}
         <i class="btn" on:click|self={showObjects}>Показать элемент</i>
+
+<!--            <i on:click={showIcon}>Показать иконку</i>-->
+<!--            <i on:click={hideIcon}>Скрыть иконку</i>-->
+<!--        {#if !isHidden}-->
+<!--            <i hidden={isHidden}>Скрытая иконка</i>-->
+<!--        {/if}-->
     </div>
 </div>
 
