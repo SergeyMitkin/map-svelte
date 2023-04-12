@@ -22,12 +22,22 @@
     </div>
 <!--    <button type="submit">Json</button>-->
 </form>
-<div id="ContentZone"></div>
-<script>
-    let APP = "";
-    document.addEventListener("DOMContentLoaded", function () {
-        APP = EMBMap(document.getElementById('ContentZone'))
-    });
-</script>
+<div class="form-group canvas-group">
+    <div id="canvas-wrap">
+        <div id="ContentZone"></div>
+        <script>
+            let APP = "";
+            document.addEventListener("DOMContentLoaded", function () {
+                APP = EMBMap(document.getElementById('ContentZone'))
+            });
+        </script>
+    </div>
+</div>
 </body>
+<style>
+    .canvas-group {
+        padding: 30px;
+        width: 100%;
+    }
+</style>
 </html>

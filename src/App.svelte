@@ -6,6 +6,7 @@
     let isTextHidden = true;
     let isEditTextHidden = true;
 
+    let canvasGroup = document.getElementById("canvas-wrap");
     let f;
     let b;
     let j;
@@ -28,7 +29,7 @@
         imgData = b.getAttribute("value");
         jsonData = j.getAttribute("value");
         c = document.getElementById('mapka');
-        c.width = window.innerWidth;
+        c.width = canvasGroup.clientWidth;
         c.height = window.innerHeight - 50; //50 на панельку
         canvas = new fabric.Canvas(c);
         canvas.selection = false;
@@ -124,8 +125,8 @@
         // console.log(canvas.offsetLeft, canvas.offsetTop, e);
         let max_id = maxRectId(canvas);
         let zoom = canvas.getZoom();
-        let width = 50;
-        let height = 50;
+        let width = 100;
+        let height = 100;
         const rect = new fabric.Rect({
             left: originX / zoom + canvas.width / 2 / zoom,
             top: originY / zoom + canvas.height / 2 / zoom,
