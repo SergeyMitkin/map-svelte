@@ -98,11 +98,13 @@
             draw(imgData);
         }
 
-        f.addEventListener('submit', function (e){
-            e.preventDefault();
-            j.setAttribute('value', JSON.stringify(canvas));
-            this.submit();
-        })
+        if(f){
+            f.addEventListener('submit', function (e){
+                e.preventDefault();
+                j.setAttribute('value', JSON.stringify(canvas));
+                this.submit();
+            })
+        }
 
         document.addEventListener('keyup', function (e){
             if(e.key === "Delete") {
