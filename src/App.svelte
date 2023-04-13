@@ -5,8 +5,11 @@
 
     let isTextHidden = true;
     let isEditTextHidden = true;
+    let isRendered = false
 
     let canvasGroup = document.getElementById("canvas-wrap");
+    let actionInput = document.getElementById("action");
+    let isView = false;
     let f;
     let b;
     let j;
@@ -106,6 +109,21 @@
                 removeObject();
             }
         })
+
+        if(actionInput && actionInput.getAttribute("value") === 'view'){
+            isView = true;
+        }
+
+        if (isView === true) {
+            canvas.on('after:render', function() {
+                if (!isRendered) {
+                    isRendered = true;
+                    canvas.getObjects().forEach((o) => {
+                        o.selectable = false;
+                    })
+                }
+            });
+        }
     });
 
     function draw(imgData) {
@@ -212,10 +230,9 @@
 
     function showObjects() {
         console.log("OBJECT", canvas.getObjects());
-    }
-
-    function showJson() {
-        console.log("JSON", JSON.stringify(canvas));
+        canvas.getObjects().forEach((o) => {
+            o.selectable = false;
+        })
     }
 
     // Удаление активного элемента
@@ -233,15 +250,6 @@
         }
         return true;
     }
-
-    let isHidden = true;
-
-    function hideIcon() {
-        isHidden = true;
-    }
-    function showIcon() {
-        isHidden = false;
-    }
 </script>
 <div class="map">
     <!--    <div class="panel">-->
@@ -250,17 +258,19 @@
     <canvas bind:this={c} class="mapZone" id="mapka">
     </canvas>
 
-    <div class="panel">
-        <i class="btn" on:click|self={addRect}>+ место</i>
-        <i class="btn" on:click|self={removeObject}>- место</i>
-        {#if !isTextHidden}
-            <i hidden={isTextHidden} class="btn" on:click|self={addText}>Добавить описание</i>
-        {/if}
-        {#if !isEditTextHidden}
-            <i hidden={isEditTextHidden} class="btn" on:click|self={editText}>Изменить описание</i>
-        {/if}
-        <i class="btn" on:click|self={showObjects}>Показать элемент</i>
-    </div>
+    {#if (!isView)}
+        <div class="panel">
+            <i class="btn" on:click|self={addRect}>+ место</i>
+            <i class="btn" on:click|self={removeObject}>- место</i>
+            {#if !isTextHidden}
+                <i hidden={isTextHidden} class="btn" on:click|self={addText}>Добавить описание</i>
+            {/if}
+            {#if !isEditTextHidden}
+                <i hidden={isEditTextHidden} class="btn" on:click|self={editText}>Изменить описание</i>
+            {/if}
+            <i class="btn" on:click|self={showObjects}>Показать элемент</i>
+        </div>
+    {/if}
 </div>
 
 <style>
