@@ -2,6 +2,7 @@
     import {fabric} from "fabric";
     import {onMount} from 'svelte';
     import {maxRectId} from "./utils/utils";
+    import {isJsonString} from "./utils/utils";
 
     let isTextHidden = true;
     let isEditTextHidden = true;
@@ -243,15 +244,6 @@
             canvas.remove(canvas.getActiveObject());
         }
     }
-
-    function isJsonString(str) {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
 </script>
 <div class="map">
     <!--    <div class="panel">-->
@@ -265,10 +257,10 @@
             <i class="btn" on:click|self={addRect}>+ место</i>
             <i class="btn" on:click|self={removeObject}>- место</i>
             {#if !isTextHidden}
-                <i hidden={isTextHidden} class="btn" on:click|self={addText}>Добавить описание</i>
+                <i class="btn" on:click|self={addText}>Добавить описание</i>
             {/if}
             {#if !isEditTextHidden}
-                <i hidden={isEditTextHidden} class="btn" on:click|self={editText}>Изменить описание</i>
+                <i class="btn" on:click|self={editText}>Изменить описание</i>
             {/if}
             <i class="btn" on:click|self={showObjects}>Показать элемент</i>
         </div>

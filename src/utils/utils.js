@@ -11,3 +11,12 @@ export function maxRectId(canvas) {
     })
     return max_id;
 }
+
+export function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
