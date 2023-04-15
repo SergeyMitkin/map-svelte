@@ -90,9 +90,21 @@
         })
 
         if(isJsonString (jsonData)) {
+            let rect_id = 0;
             canvas.loadFromJSON(jsonData, canvas.renderAll.bind(canvas), function(o, object) {
                 if (object.type === "image") {
                     object.selectable = false;
+                }
+
+                if (object.type === 'rect') {
+                    rect_id++;
+                    object.rect_id = rect_id;
+                    object.on('selected', () => {
+                        isTextHidden = false
+                    })
+                    object.on('deselected', () => {
+                        isTextHidden = true
+                    })
                 }
             });
         } else {
@@ -117,16 +129,17 @@
             isView = true;
         }
 
-        if (isView === true) {
-            canvas.on('after:render', function() {
+        canvas.on('after:render', function() {
+            // При просмотре, отключается возможность выбора для всех элементов
+            if (isView === true) {
                 if (!isRendered) {
                     isRendered = true;
                     canvas.getObjects().forEach((o) => {
                         o.selectable = false;
                     })
                 }
-            });
-        }
+            }
+        });
     });
 
     function draw(imgData) {
@@ -233,9 +246,7 @@
 
     function showObjects() {
         console.log("OBJECT", canvas.getObjects());
-        canvas.getObjects().forEach((o) => {
-            o.selectable = false;
-        })
+        j.setAttribute('value', JSON.stringify(canvas));
     }
 
     // Удаление активного элемента
