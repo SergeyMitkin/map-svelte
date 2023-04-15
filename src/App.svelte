@@ -6,11 +6,10 @@
 
     let isTextHidden = true;
     let isEditTextHidden = true;
-    let isRendered = false
 
     let canvasGroup = document.getElementById("canvas-wrap");
     let actionInput = document.getElementById("action");
-    let isView = false;
+    let isView = false; // Режим просмотра/редактирования
     let f;
     let b;
     let j;
@@ -37,6 +36,9 @@
         c.height = window.innerHeight - 50; //50 на панельку
         canvas = new fabric.Canvas(c);
         canvas.selection = false;
+        if(actionInput && actionInput.getAttribute("value") === 'view'){
+            isView = true;
+        }
 
         canvas.on('mouse:wheel', function (opt) {
             let delta = opt.e.deltaY;
@@ -92,19 +94,40 @@
         if(isJsonString (jsonData)) {
             let rect_id = 0;
             canvas.loadFromJSON(jsonData, canvas.renderAll.bind(canvas), function(o, object) {
-                if (object.type === "image") {
+                // В режиме просмотра и для фона отключается возможность выбора
+                if (isView === true || object.type === "image") {
                     object.selectable = false;
                 }
 
-                if (object.type === 'rect') {
+                if (object.type === 'rect' || object.type === 'group') {
                     rect_id++;
                     object.rect_id = rect_id;
-                    object.on('selected', () => {
-                        isTextHidden = false
-                    })
-                    object.on('deselected', () => {
-                        isTextHidden = true
-                    })
+
+                    if (object.type === 'rect') {
+                        object.on('selected', () => {
+                            isTextHidden = false
+                        })
+                        object.on('deselected', () => {
+                            isTextHidden = true
+                        })
+                    } else {
+                        object.cornerColor = 'white'
+                        object.on('deselected', () => {
+                            isEditTextHidden = true;
+                        })
+                        object.on('selected', () => {
+                            isEditTextHidden = false
+                            isTextHidden = true
+                        })
+                        object.getObjects().forEach((o) => {
+                            o.rect_id = rect_id
+                            if (o.type === 'textbox') {
+                                o.on('deselected', () => {
+                                    groupObjects(o.rect_id);
+                                })
+                            }
+                        });
+                    }
                 }
             });
         } else {
@@ -124,22 +147,6 @@
                 removeObject();
             }
         })
-
-        if(actionInput && actionInput.getAttribute("value") === 'view'){
-            isView = true;
-        }
-
-        canvas.on('after:render', function() {
-            // При просмотре, отключается возможность выбора для всех элементов
-            if (isView === true) {
-                if (!isRendered) {
-                    isRendered = true;
-                    canvas.getObjects().forEach((o) => {
-                        o.selectable = false;
-                    })
-                }
-            }
-        });
     });
 
     function draw(imgData) {
@@ -246,7 +253,6 @@
 
     function showObjects() {
         console.log("OBJECT", canvas.getObjects());
-        j.setAttribute('value', JSON.stringify(canvas));
     }
 
     // Удаление активного элемента
