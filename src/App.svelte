@@ -24,6 +24,7 @@
     let originY = 0;
     let lastX = 0;
     let lastY = 0;
+    let isTextVisible = false;
 
     onMount(() => {
         f = document.getElementById("map-form");
@@ -34,6 +35,7 @@
         c = document.getElementById('mapka');
         c.width = canvasGroup.clientWidth;
         c.height = window.innerHeight - 50; //50 на панельку
+
         canvas = new fabric.Canvas(c);
         canvas.selection = false;
         if(actionInput && actionInput.getAttribute("value") === 'view'){
@@ -90,6 +92,9 @@
         canvas.on("mouse:out", function () {
             isDrug = false;
         })
+        canvas.on("mouse:over", (e) => {
+            console.log(e.target);
+        })
 
         if(isJsonString (jsonData)) {
             let rect_id = 0;
@@ -110,7 +115,8 @@
                         object.on('deselected', () => {
                             isTextHidden = true
                         })
-                    } else {
+                    }
+                    else if (object.type === 'group') {
                         object.cornerColor = 'white'
                         object.on('deselected', () => {
                             isEditTextHidden = true;
@@ -119,11 +125,65 @@
                             isEditTextHidden = false
                             isTextHidden = true
                         })
+
+                        object.on('mouseover', (e) => {
+                            console.log(e.target.rect_id)
+                        })
+
+                        object.on('mouseout', (e) => {
+                            console.log(e.target.rect_id)
+                        })
+
+                        // object.on('mouseover', () => {
+                        //     console.log('over');
+                        //     object.destroy();
+                        //     let objects = object.getObjects();
+                        //     canvas.remove(objects);
+                        //     canvas.add(...objects);
+                        //     for(let i = 0; i < objects.length; i++) {
+                        //         if (objects[i].type === 'textbox') {
+                        //             objects[i].visible = false;
+                        //         }
+                        //     }
+                        //     objects = null;
+                        //     groupObjects(object.rect_id);
+                        //     canvas.requestRenderAll();
+                        // })
+                        //
+                        // object.on('mouseout', () => {
+                        //     console.log('out');
+                        //     object.destroy();
+                        //     let objects = object.getObjects();
+                        //     canvas.remove(objects);
+                        //     canvas.add(...objects);
+                        //     for(let i = 0; i < objects.length; i++) {
+                        //         if (objects[i].type === 'textbox') {
+                        //             objects[i].visible = true;
+                        //         }
+                        //     }
+                        //     objects = null;
+                        //     groupObjects(object.rect_id);
+                        //     canvas.requestRenderAll();
+                        // })
+
+                        object.on('mouseover', () => {
+                            console.log('group');
+                            // object.getObjects('textbox')[0].visible = false
+                            canvas.requestRenderAll();
+                        })
+
                         object.getObjects().forEach((o) => {
                             o.rect_id = rect_id
                             if (o.type === 'textbox') {
                                 o.on('deselected', () => {
                                     groupObjects(o.rect_id);
+                                })
+                            }
+                            else if (o.type === 'rect') {
+                                o.on('mouseover', () => {
+                                    console.log('rect');
+                                    // object.getObjects('textbox')[0].visible = false
+                                    canvas.requestRenderAll();
                                 })
                             }
                         });
