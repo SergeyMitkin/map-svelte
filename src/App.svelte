@@ -24,7 +24,9 @@
     let originY = 0;
     let lastX = 0;
     let lastY = 0;
-    let isTextVisible = false;
+    // let idVisibleText = 0;
+
+    // $: idVisibleText
 
     onMount(() => {
         f = document.getElementById("map-form");
@@ -89,12 +91,11 @@
         canvas.on("mouse:up", function (e) {
             isDrug = false;
         })
-        canvas.on("mouse:out", function () {
-            isDrug = false;
-        })
-        canvas.on("mouse:over", (e) => {
-            console.log(e.target);
-        })
+
+        // canvas.on("mouse:out", function () {
+        //     isDrug = false;
+        //     console.log('canvas-out');
+        // })
 
         if(isJsonString (jsonData)) {
             let rect_id = 0;
@@ -125,17 +126,13 @@
                             isEditTextHidden = false
                             isTextHidden = true
                         })
-
-                        object.on('mouseover', (e) => {
-                            console.log(e.target.rect_id)
-                        })
-
-                        object.on('mouseout', (e) => {
-                            console.log(e.target.rect_id)
-                        })
+                        //
+                        // object.on('mouseout', (e) => {
+                        //     console.log(e.target.rect_id)
+                        // })
 
                         // object.on('mouseover', () => {
-                        //     console.log('over');
+                        //
                         //     object.destroy();
                         //     let objects = object.getObjects();
                         //     canvas.remove(objects);
@@ -149,7 +146,7 @@
                         //     groupObjects(object.rect_id);
                         //     canvas.requestRenderAll();
                         // })
-                        //
+
                         // object.on('mouseout', () => {
                         //     console.log('out');
                         //     object.destroy();
@@ -166,11 +163,11 @@
                         //     canvas.requestRenderAll();
                         // })
 
-                        object.on('mouseover', () => {
-                            console.log('group');
-                            // object.getObjects('textbox')[0].visible = false
-                            canvas.requestRenderAll();
-                        })
+                        // object.on('mouseover', () => {
+                        //     console.log('group');
+                        //     object.getObjects('textbox')[0].visible = false
+                        //     canvas.requestRenderAll();
+                        // })
 
                         object.getObjects().forEach((o) => {
                             o.rect_id = rect_id
@@ -178,15 +175,41 @@
                                 o.on('deselected', () => {
                                     groupObjects(o.rect_id);
                                 })
-                            }
-                            else if (o.type === 'rect') {
-                                o.on('mouseover', () => {
-                                    console.log('rect');
-                                    // object.getObjects('textbox')[0].visible = false
-                                    canvas.requestRenderAll();
-                                })
+                                o.visible = false
                             }
                         });
+
+                        object.on('mouseover', (e) => {
+                            canvas.off('mouse:out');
+
+                            let idVisibleText = e.target.rect_id;
+
+                            object.destroy();
+                            let objects = object.getObjects();
+                            canvas.remove(objects);
+                            canvas.add(...objects);
+                            for(let i = 0; i < objects.length; i++) {
+                                if (objects[i].type === 'textbox') {
+                                    objects[i].visible = true;
+                                }
+                            }
+                            objects = null;
+                            groupObjects(object.rect_id);
+                            canvas.requestRenderAll();
+
+                            console.log(idVisibleText);
+                            canvas.on("mouse:over", (e) => {
+                                // console.log(e.target);
+                                // console.log('canvas-over');
+                                // console.log(idVisibleText);
+                            })
+                            canvas.on("mouse:out", (e) => {
+                                // console.log(e.target);
+                                console.log('canvas-out');
+                                // console.log(idVisibleText);
+                            })
+
+                        })
                     }
                 }
             });
