@@ -186,7 +186,6 @@
     }
 
     function addRect(e) {
-        // console.log(canvas.offsetLeft, canvas.offsetTop, e);
         let max_id = maxRectId(canvas);
         let zoom = canvas.getZoom();
         let width = 100;
@@ -205,15 +204,6 @@
         rect.on('deselected', () => {
             isTextHidden = true
         })
-
-        rect.on('mouseover', () => {
-            rect.opacity = 0;
-            canvas.requestRenderAll()
-        })
-        rect.on('mouseout', () => {
-            rect.opacity = 1;
-            canvas.requestRenderAll()
-        })
         canvas.add(rect);
         canvas.renderAll();
     }
@@ -228,7 +218,7 @@
         })
         text.on('deselected', () => {
             groupObjects(activeRect.rect_id);
-            text.visible = false
+            text.opacity = 0
         })
         canvas.setActiveObject(text);
         canvas.add(text);
@@ -246,7 +236,7 @@
         for (var i = 0; i < objects.length; i++) {
             var obj = objects[i];
             if (obj instanceof fabric.Textbox) {
-                obj.visible = true;
+                obj.opacity = 1;
                 canvas.setActiveObject(obj);
             }
         }
@@ -273,11 +263,23 @@
         group.on('selected', () => {
             isEditTextHidden = false
             isTextHidden = true
+
+            group.destroy();
+            let objects = group.getObjects();
+            canvas.remove(objects);
+            canvas.add(...objects);
+            for(let i = 0; i < objects.length; i++) {
+                if (objects[i].type === 'textbox') {
+                    objects[i].opacity = 1;
+                }
+            }
+            objects = null;
+            groupObjects(group.rect_id);
+            canvas.requestRenderAll();
         })
-        // group.off('mouseover');
         group.on('mouseover', () => {
-            console.log('over');
-            group_objects[1].visible = true
+            // console.log('over');
+
             canvas.renderAll();
             // group.destroy();
             // let objects = group.getObjects();
