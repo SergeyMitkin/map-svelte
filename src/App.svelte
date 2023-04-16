@@ -24,6 +24,7 @@
     let originY = 0;
     let lastX = 0;
     let lastY = 0;
+    let isVis = false;
     // let idVisibleText = 0;
 
     // $: idVisibleText
@@ -204,6 +205,15 @@
         rect.on('deselected', () => {
             isTextHidden = true
         })
+
+        rect.on('mouseover', () => {
+            rect.opacity = 0;
+            canvas.requestRenderAll()
+        })
+        rect.on('mouseout', () => {
+            rect.opacity = 1;
+            canvas.requestRenderAll()
+        })
         canvas.add(rect);
         canvas.renderAll();
     }
@@ -264,8 +274,26 @@
             isEditTextHidden = false
             isTextHidden = true
         })
+        // group.off('mouseover');
         group.on('mouseover', () => {
             console.log('over');
+            group_objects[1].visible = true
+            canvas.renderAll();
+            // group.destroy();
+            // let objects = group.getObjects();
+            // canvas.remove(objects);
+            // canvas.add(...objects);
+            // for(let i = 0; i < objects.length; i++) {
+            //     if (objects[i].type === 'textbox') {
+            //         objects[i].visible = true;
+            //     }
+            // }
+            // objects = null;
+            // groupObjects(group.rect_id);
+            // canvas.requestRenderAll();
+        })
+        group.on('mouseout', () => {
+            // console.log('out');
         })
         canvas.add(group);
         clearCanvas(group_objects);
