@@ -267,19 +267,26 @@
             isEditTextHidden = false
             isTextHidden = true
             let text_r = group.getObjects('textbox')[0];
+
             let text_v = text_r.text;
-            let text_a = new fabric.Textbox(text_v , {
+            let text_add = new fabric.Textbox(text_v , {
                 fontSize: 20,
                 left: group.left,
                 top: group.top,
-                rect_id: group.rect_id
+                rect_id: group.rect_id,
+                angle: group.angle,
+                opacity: 1,
+                visible: true
             })
-            text_a.on('deselected', () => {
-                groupObjects(text_a.rect_id);
-                text_a.opacity = 0
+            text_add.on('deselected', () => {
+                groupObjects(text_add.rect_id);
+                text_add.opacity = 0
             })
             group.remove(text_r);
-            group.addWithUpdate(text_a);
+            group.add(text_add);
+            canvas.add(text_add);
+            canvas.renderAll();
+            console.log(group.getObjects('textbox')[0]);
         })
         // group.on('mouseover', () => {
             // group.getObjects('textbox')[0].opacity = 1
