@@ -199,12 +199,12 @@
             left: activeRect.left,
             top: activeRect.top,
             rect_id: activeRect.rect_id,
-            angle: activeRect.angle
+            angle: activeRect.angle,
         })
         text.on('deselected', () => {
-            groupObjects(activeRect.rect_id);
             text.opacity = 0
-            canvas.renderAll();
+            groupObjects(activeRect.rect_id);
+            canvas.renderAll()
         })
         canvas.setActiveObject(text);
         canvas.add(text);
@@ -246,7 +246,6 @@
 
         group.on('deselected', () => {
             isEditTextHidden = true;
-            console.log('deselected');
         })
 
         group.on('selected', () => {
@@ -259,12 +258,14 @@
                 top: text_r.top,
                 rect_id: text_r.rect_id,
                 angle: text_r.angle,
+                width: text_r.width
             })
             group.remove(text_r);
             text_add.on('deselected', () => {
-                groupObjects(text_r.rect_id);
                 text_add.opacity = 0
-                canvas.renderAll();
+                text_add.width = 100
+                groupObjects(text_r.rect_id);
+                canvas.renderAll()
             })
             group.add(text_add);
             canvas.renderAll();
@@ -278,11 +279,13 @@
                 top: text_r.top,
                 rect_id: text_r.rect_id,
                 angle: text_r.angle,
+                opacity: 1,
+                width: text_r.width
             })
             group.remove(text_r);
             text_add.on('deselected', () => {
-                groupObjects(text_r.rect_id);
                 text_add.opacity = 0
+                groupObjects(text_r.rect_id);
                 canvas.renderAll();
             })
             group.add(text_add);
@@ -297,12 +300,13 @@
                 top: text_r.top,
                 rect_id: text_r.rect_id,
                 angle: text_r.angle,
-                opacity: 0
+                opacity: 0,
+                width: text_r.width
             })
             group.remove(text_r);
             text_add.on('deselected', () => {
-                groupObjects(text_r.rect_id);
                 text_add.opacity = 0
+                groupObjects(text_r.rect_id);
                 canvas.renderAll();
             })
             group.add(text_add);
