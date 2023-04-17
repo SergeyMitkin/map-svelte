@@ -219,6 +219,7 @@
         text.on('deselected', () => {
             groupObjects(activeRect.rect_id);
             text.opacity = 0
+            canvas.renderAll();
         })
         canvas.setActiveObject(text);
         canvas.add(text);
@@ -267,62 +268,23 @@
             isEditTextHidden = false
             isTextHidden = true
             let text_r = group.getObjects('textbox')[0];
-
-            let text_v = text_r.text;
-            let text_add = new fabric.Textbox(text_v , {
+            let text_add = new fabric.Textbox(text_r.text , {
                 fontSize: 20,
-                left: group.left,
-                top: group.top,
-                rect_id: group.rect_id,
-                angle: group.angle,
-                opacity: 1,
-                visible: true
-            })
-            text_add.on('deselected', () => {
-                groupObjects(text_add.rect_id);
-                text_add.opacity = 0
+                left: text_r.left,
+                top: text_r.top,
+                rect_id: text_r.rect_id,
+                angle: text_r.angle,
             })
             group.remove(text_r);
+            text_add.on('deselected', () => {
+                groupObjects(text_r.rect_id);
+                text_add.opacity = 0
+                canvas.renderAll();
+            })
             group.add(text_add);
-            canvas.add(text_add);
             canvas.renderAll();
             console.log(group.getObjects('textbox')[0]);
         })
-        // group.on('mouseover', () => {
-            // group.getObjects('textbox')[0].opacity = 1
-            //
-            // console.log(group.getObjects('textbox')[0]);
-            // canvas.renderAll();
-            // group.destroy();
-            // let objects = group.getObjects();
-            // canvas.remove(objects);
-            // canvas.add(...objects);
-            // for(let i = 0; i < objects.length; i++) {
-            //     if (objects[i].type === 'textbox') {
-            //         objects[i].opacity = 1;
-            //     }
-            // }
-            // objects = null;
-            // groupObjects(group.rect_id);
-            // canvas.requestRenderAll();
-
-            // canvas.renderAll();
-            // group.destroy();
-            // let objects = group.getObjects();
-            // canvas.remove(objects);
-            // canvas.add(...objects);
-            // for(let i = 0; i < objects.length; i++) {
-            //     if (objects[i].type === 'textbox') {
-            //         objects[i].visible = true;
-            //     }
-            // }
-            // objects = null;
-            // groupObjects(group.rect_id);
-            // canvas.requestRenderAll();
-        // })
-        // group.on('mouseout', () => {
-            // console.log('out');
-        // })
         canvas.add(group);
         clearCanvas(group_objects);
         canvas.requestRenderAll();
