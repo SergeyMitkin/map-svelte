@@ -142,8 +142,6 @@
                         })
 
                         object.on('mouseover', () => {
-                            isEditTextHidden = false
-                            isTextHidden = true
                             let text_r = object.getObjects('textbox')[0];
                             let text_add = new fabric.Textbox(text_r.text , {
                                 fontSize: 20,
@@ -165,8 +163,6 @@
                         })
 
                         object.on('mouseout', () => {
-                            isEditTextHidden = false
-                            isTextHidden = true
                             let text_r = object.getObjects('textbox')[0];
                             let text_add = new fabric.Textbox(text_r.text , {
                                 fontSize: 20,
@@ -250,6 +246,7 @@
             isTextHidden = true
         })
         canvas.add(rect);
+        rect.bringToFront()
         canvas.renderAll();
     }
 
