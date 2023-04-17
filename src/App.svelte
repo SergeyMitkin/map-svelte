@@ -132,24 +132,8 @@
                                 o.on('deselected', () => {
                                     groupObjects(o.rect_id);
                                 })
-                                // o.visible = false
                             }
                         });
-
-                        // object.on('mouseover', (e) => {
-                        //     object.destroy();
-                        //     let objects = object.getObjects();
-                        //     canvas.remove(objects);
-                        //     canvas.add(...objects);
-                        //     for(let i = 0; i < objects.length; i++) {
-                        //         if (objects[i].type === 'textbox') {
-                        //             objects[i].visible = true;
-                        //         }
-                        //     }
-                        //     objects = null;
-                        //     groupObjects(object.rect_id);
-                        //     canvas.requestRenderAll();
-                        // })
                     }
                 }
             });
@@ -214,7 +198,8 @@
             fontSize: 20,
             left: activeRect.left,
             top: activeRect.top,
-            rect_id: activeRect.rect_id
+            rect_id: activeRect.rect_id,
+            angle: activeRect.angle
         })
         text.on('deselected', () => {
             groupObjects(activeRect.rect_id);
@@ -283,8 +268,47 @@
             })
             group.add(text_add);
             canvas.renderAll();
-            console.log(group.getObjects('textbox')[0]);
         })
+
+        group.on('mouseover', () => {
+            let text_r = group.getObjects('textbox')[0];
+            let text_add = new fabric.Textbox(text_r.text , {
+                fontSize: 20,
+                left: text_r.left,
+                top: text_r.top,
+                rect_id: text_r.rect_id,
+                angle: text_r.angle,
+            })
+            group.remove(text_r);
+            text_add.on('deselected', () => {
+                groupObjects(text_r.rect_id);
+                text_add.opacity = 0
+                canvas.renderAll();
+            })
+            group.add(text_add);
+            canvas.renderAll();
+        })
+
+        group.on('mouseout', () => {
+            let text_r = group.getObjects('textbox')[0];
+            let text_add = new fabric.Textbox(text_r.text , {
+                fontSize: 20,
+                left: text_r.left,
+                top: text_r.top,
+                rect_id: text_r.rect_id,
+                angle: text_r.angle,
+                opacity: 0
+            })
+            group.remove(text_r);
+            text_add.on('deselected', () => {
+                groupObjects(text_r.rect_id);
+                text_add.opacity = 0
+                canvas.renderAll();
+            })
+            group.add(text_add);
+            canvas.renderAll();
+        })
+
         canvas.add(group);
         clearCanvas(group_objects);
         canvas.requestRenderAll();
