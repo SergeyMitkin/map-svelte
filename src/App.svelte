@@ -183,8 +183,16 @@
         })
 
         window.onbeforeunload = function() {
+            // Удаляем класс active у controlLinks
+            let controlLinks = document.getElementsByClassName("control-links")[0];
+            let buttons = controlLinks.getElementsByTagName('a');
+            for (let i = 0; i<buttons.length; i++) {
+                if (buttons[i].classList.contains('active')){
+                    buttons[i].classList.remove('active');
+                }
+            }
             if (JSON.stringify(canvas) !== jsonData) {
-                return "Есть несохранённые изменения. Покинуть страницу?";
+                return "Есть несохранённые изменения. Всё равно уходим?";
             }
         };
     });
