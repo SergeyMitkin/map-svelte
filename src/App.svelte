@@ -98,6 +98,18 @@
                 // В режиме просмотра и для фона отключается возможность выбора
                 if (isView === true || object.type === "image") {
                     object.selectable = false;
+                    if (isView === true) {
+                        if(object.type === "group") {
+                            object.getObjects().forEach((o) => {
+                                if (o.type === "rect") {
+                                    o.set('opacity', 0)
+                                }
+                            })
+                        }
+                        if (object.type === "rect") {
+                            object.opacity = 0;
+                        }
+                    }
                 }
 
                 if (object.type === 'rect' || object.type === 'group') {
@@ -117,24 +129,6 @@
                         object.on('selected', () => {
                             isEditTextHidden = false
                             isTextHidden = true
-                            let text_r = object.getObjects('textbox')[0];
-                            let text_add = new fabric.Textbox(text_r.text , {
-                                fontSize: 20,
-                                left: text_r.left,
-                                top: text_r.top,
-                                rect_id: text_r.rect_id,
-                                angle: text_r.angle,
-                                opacity: 1,
-                                width: text_r.width
-                            })
-                            object.remove(text_r);
-                            text_add.on('deselected', () => {
-                                text_add.opacity = 0
-                                groupObjects(text_r.rect_id);
-                                canvas.renderAll()
-                            })
-                            object.add(text_add);
-                            canvas.renderAll();
                         })
 
                         object.on('deselected', () => {
@@ -142,44 +136,20 @@
                         })
 
                         object.on('mouseover', () => {
-                            let text_r = object.getObjects('textbox')[0];
-                            let text_add = new fabric.Textbox(text_r.text , {
-                                fontSize: 20,
-                                left: text_r.left,
-                                top: text_r.top,
-                                rect_id: text_r.rect_id,
-                                angle: text_r.angle,
-                                opacity: 1,
-                                width: text_r.width
+                            object.getObjects().forEach((o) => {
+                                if (o.type === 'textbox'){
+                                    o.set('opacity', 1)
+                                }
                             })
-                            object.remove(text_r);
-                            text_add.on('deselected', () => {
-                                text_add.opacity = 0
-                                groupObjects(text_r.rect_id);
-                                canvas.renderAll()
-                            })
-                            object.add(text_add);
                             canvas.renderAll();
                         })
 
                         object.on('mouseout', () => {
-                            let text_r = object.getObjects('textbox')[0];
-                            let text_add = new fabric.Textbox(text_r.text , {
-                                fontSize: 20,
-                                left: text_r.left,
-                                top: text_r.top,
-                                rect_id: text_r.rect_id,
-                                angle: text_r.angle,
-                                opacity: 0,
-                                width: text_r.width
+                            object.getObjects().forEach((o) => {
+                                if (o.type === 'textbox'){
+                                    o.set('opacity', 0)
+                                }
                             })
-                            object.remove(text_r);
-                            text_add.on('deselected', () => {
-                                text_add.opacity = 0
-                                groupObjects(text_r.rect_id);
-                                canvas.renderAll()
-                            })
-                            object.add(text_add);
                             canvas.renderAll();
                         })
 
@@ -309,65 +279,23 @@
         group.on('selected', () => {
             isEditTextHidden = false
             isTextHidden = true
-            let text_r = group.getObjects('textbox')[0];
-            let text_add = new fabric.Textbox(text_r.text , {
-                fontSize: 20,
-                left: text_r.left,
-                top: text_r.top,
-                rect_id: text_r.rect_id,
-                angle: text_r.angle,
-                opacity: 1,
-                width: text_r.width
-            })
-            group.remove(text_r);
-            text_add.on('deselected', () => {
-                text_add.opacity = 0
-                groupObjects(text_r.rect_id);
-                canvas.renderAll()
-            })
-            group.add(text_add);
-            canvas.renderAll();
         })
 
         group.on('mouseover', () => {
-            let text_r = group.getObjects('textbox')[0];
-            let text_add = new fabric.Textbox(text_r.text , {
-                fontSize: 20,
-                left: text_r.left,
-                top: text_r.top,
-                rect_id: text_r.rect_id,
-                angle: text_r.angle,
-                opacity: 1,
-                width: text_r.width
+            group.getObjects().forEach((o) => {
+                if (o.type === 'textbox'){
+                    o.set('opacity', 1)
+                }
             })
-            group.remove(text_r);
-            text_add.on('deselected', () => {
-                text_add.opacity = 0
-                groupObjects(text_r.rect_id);
-                canvas.renderAll();
-            })
-            group.add(text_add);
             canvas.renderAll();
         })
 
         group.on('mouseout', () => {
-            let text_r = group.getObjects('textbox')[0];
-            let text_add = new fabric.Textbox(text_r.text , {
-                fontSize: 20,
-                left: text_r.left,
-                top: text_r.top,
-                rect_id: text_r.rect_id,
-                angle: text_r.angle,
-                opacity: 0,
-                width: text_r.width
+            group.getObjects().forEach((o) => {
+                if (o.type === 'textbox'){
+                    o.set('opacity', 0)
+                }
             })
-            group.remove(text_r);
-            text_add.on('deselected', () => {
-                text_add.opacity = 0
-                groupObjects(text_r.rect_id);
-                canvas.renderAll();
-            })
-            group.add(text_add);
             canvas.renderAll();
         })
 
@@ -385,6 +313,11 @@
     function showObjects() {
         console.log("OBJECT", canvas.getObjects());
         // j.setAttribute('value', JSON.stringify(canvas))
+    }
+
+    function submitForm() {
+        j.setAttribute('value', JSON.stringify(canvas));
+        f.submit();
     }
 
     // Удаление активного элемента
@@ -412,6 +345,7 @@
                 <i class="btn" on:click|self={editText}>Изменить описание</i>
             {/if}
             <i class="btn" on:click|self={showObjects}>Показать элемент</i>
+            <i class="btn" on:click|self={submitForm}>Сохранить</i>
         </div>
     {/if}
 </div>
