@@ -181,7 +181,17 @@
                 removeObject();
             }
         })
+
+        window.onbeforeunload = function() {
+            if (JSON.stringify(canvas) !== jsonData) {
+                return "Есть несохранённые изменения. Покинуть страницу?";
+            }
+        };
     });
+
+    function livePage () {
+
+    }
 
     function draw(imgData) {
         fabric.util.loadImage(imgData, function (img) {
@@ -316,6 +326,7 @@
     }
 
     function submitForm() {
+        window.onbeforeunload = null;
         j.setAttribute('value', JSON.stringify(canvas));
         f.submit();
     }
